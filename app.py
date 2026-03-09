@@ -522,6 +522,11 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # ── 3D Orbit Viewer ───────────────────────────────────────────────────────────
 st.markdown('<div class="section-header">3D Orbit Viewer</div>', unsafe_allow_html=True)
+st.markdown("""
+<div style='font-size:12px; color:#6e7681; margin-bottom:12px;'>
+    Asteroid positions relative to Earth &nbsp;·&nbsp; distances to scale &nbsp;·&nbsp; drag to rotate
+</div>
+""", unsafe_allow_html=True)
 st.markdown('<div class="chart-card">', unsafe_allow_html=True)
 
 # Distribute asteroids in 3D using golden-angle spiral for even spread
@@ -645,10 +650,6 @@ fig3d.update_layout(
     margin=dict(l=0, r=0, t=10, b=0),
     height=520,
     font=dict(color="#c9d1d9"),
-    title=dict(
-        text="Asteroid positions relative to Earth (distances to scale · drag to rotate)",
-        font=dict(size=12, color="#6e7681"), x=0.5,
-    ),
 )
 st.plotly_chart(fig3d, width="stretch")
 st.markdown('</div>', unsafe_allow_html=True)
