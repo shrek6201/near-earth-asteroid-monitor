@@ -6,6 +6,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta, timezone
 from streamlit_autorefresh import st_autorefresh
+from streamlit_js_eval import streamlit_js_eval
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -216,6 +218,16 @@ section[data-testid="stSidebar"] .stButton button:hover { opacity: 0.85; }
 REFRESH_MS = 5 * 60 * 1000
 st_autorefresh(interval=REFRESH_MS, key="auto_refresh")
 
+# ── Browser timezone ──────────────────────────────────────────────────────────
+browser_tz_str = streamlit_js_eval(
+    js_expressions="Intl.DateTimeFormat().resolvedOptions().timeZone",
+    key="browser_tz",
+)
+try:
+    user_tz = ZoneInfo(browser_tz_str) if browser_tz_str else timezone.utc
+except ZoneInfoNotFoundError:
+    user_tz = timezone.utc
+
 # ── API ───────────────────────────────────────────────────────────────────────
 NASA_URL = "https://api.nasa.gov/neo/rest/v1/feed"
 
@@ -268,12 +280,15 @@ with st.sidebar:
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     now_utc = datetime.now(timezone.utc)
+    now_local = datetime.now(user_tz)
+    tz_label = browser_tz_str if browser_tz_str else "UTC"
     st.markdown(f"""
     <div style='font-size:11px; color:#6e7681; line-height:1.8;'>
         <div>📅 <b style='color:#8b949e'>Date range</b></div>
-        <div style='margin-left:18px;'>{now_utc.strftime('%b %d')} – {(now_utc + timedelta(days=6)).strftime('%b %d, %Y')}</div>
+        <div style='margin-left:18px;'>{now_local.strftime('%b %d')} – {(now_local + timedelta(days=6)).strftime('%b %d, %Y')}</div>
         <div style='margin-top:8px;'>🕐 <b style='color:#8b949e'>Last updated</b></div>
-        <div style='margin-left:18px;'>{now_utc.strftime('%H:%M:%S UTC')}</div>
+        <div style='margin-left:18px;'>{now_local.strftime('%I:%M:%S %p')}</div>
+        <div style='margin-left:18px; color:#4a5568;'>{tz_label}</div>
         <div style='margin-top:8px;'>🔄 <b style='color:#8b949e'>Auto-refresh</b></div>
         <div style='margin-left:18px;'>Every 5 minutes</div>
     </div>
@@ -319,7 +334,9 @@ fastest    = df.loc[df["Velocity (km/h)"].idxmax()]
 largest    = df.loc[df["Diameter Avg (m)"].idxmax()]
 
 # ── Hero ──────────────────────────────────────────────────────────────────────
-now_str = datetime.now(timezone.utc).strftime("%b %d, %Y · %H:%M UTC")
+now_local = datetime.now(user_tz)
+tz_label = browser_tz_str if browser_tz_str else "UTC"
+now_str = f"{now_local.strftime('%b %d, %Y · %I:%M %p')} ({tz_label})"
 st.markdown(f"""
 <div class="hero">
     <div class="live-pill"><div class="live-dot"></div>LIVE</div>
@@ -480,6 +497,6 @@ st.markdown(f"""
             display:flex; justify-content:space-between; align-items:center;
             font-size:11px; color:#6e7681;'>
     <span>Source: <a href="https://api.nasa.gov/" style="color:#58a6ff; text-decoration:none;">NASA Center for Near Earth Object Studies (CNEOS)</a></span>
-    <span>Auto-refreshes every 5 min · {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</span>
+    <span>Auto-refreshes every 5 min · Last refresh: {datetime.now(user_tz).strftime('%I:%M:%S %p')} ({tz_label})</span>
 </div>
 """, unsafe_allow_html=True)
