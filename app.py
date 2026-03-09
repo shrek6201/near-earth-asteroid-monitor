@@ -31,6 +31,8 @@ html, body, .stApp {
 
 /* ── Hide streamlit chrome ── */
 #MainMenu, footer, header { visibility: hidden; }
+[data-testid="stHeader"] { display: none; }
+[data-testid="stToolbar"] { display: none; }
 .block-container { padding: 2rem 2.5rem 2rem 2.5rem; max-width: 1400px; }
 
 /* ── Sidebar ── */
