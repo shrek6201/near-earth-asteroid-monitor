@@ -139,27 +139,53 @@ section[data-testid="stSidebar"] .stButton button:hover { opacity: 0.85; }
 LIGHT_CSS = """
 <style>
 html, body, .stApp { background-color: #f6f8fa !important; color: #24292f !important; }
-[data-testid="stHeader"]  { background-color: #f6f8fa !important; }
+
+/* Header */
+[data-testid="stHeader"] { background-color: #f6f8fa !important; }
+
+/* Top-right toolbar buttons — force dark icons so they show on light bg */
+[data-testid="stToolbar"] button,
+[data-testid="stToolbar"] button svg,
+[data-testid="stToolbar"] a,
+[data-testid="stToolbar"] svg { color: #24292f !important; fill: #24292f !important; }
+[data-testid="stToolbar"] button:hover { background: #e8eaed !important; border-radius: 6px; }
+
+/* Sidebar */
 [data-testid="stSidebar"], section[data-testid="stSidebar"] {
     background: #ffffff !important; border-right: 1px solid #d0d7de !important;
 }
+section[data-testid="stSidebar"] * { color: #24292f !important; }
 section[data-testid="stSidebar"] .stTextInput input {
     background: #f6f8fa !important; border: 1px solid #d0d7de !important; color: #24292f !important;
 }
-.kpi-card { background: linear-gradient(135deg,#ffffff,#f6f8fa) !important; border-color:#d0d7de !important; }
+
+/* KPI cards */
+.kpi-card  { background: linear-gradient(135deg,#ffffff,#f6f8fa) !important; border-color:#d0d7de !important; }
 .kpi-label { color: #57606a !important; }
 .kpi-value { color: #24292f !important; }
-.kpi-sub   { color: #6e7781 !important; }
+.kpi-sub   { color: #57606a !important; }
+
+/* Sections */
 .section-header { color:#57606a !important; border-color:#d0d7de !important; }
-.hero { background: linear-gradient(135deg,#ffffff,#eaf0f6,#ffffff) !important; border-color:#d0d7de !important; }
+
+/* Hero */
+.hero   { background: linear-gradient(135deg,#ffffff,#eaf0f6,#ffffff) !important; border-color:#d0d7de !important; }
 .hero p { color: #57606a !important; }
-.chart-card { background:#ffffff !important; border-color:#d0d7de !important; }
+
+/* Charts & cards */
+.chart-card  { background:#ffffff !important; border-color:#d0d7de !important; }
 .detail-card { background: linear-gradient(135deg,#ffffff,#f6f8fa) !important; border-color:#d0d7de !important; }
 .detail-row  { border-color:#d0d7de !important; }
 .detail-label { color:#57606a !important; }
 .detail-value { color:#24292f !important; }
 .threat-bar-wrap { background:#d0d7de !important; }
+
+/* Historical comparison cards */
 .stDataFrame { border-color:#d0d7de !important; }
+
+/* General text fallback */
+p, span, div, label { color: #24292f; }
+h1, h2, h3 { color: #24292f !important; }
 </style>
 """
 
