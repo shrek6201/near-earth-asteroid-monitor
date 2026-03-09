@@ -29,10 +29,19 @@ html, body, .stApp {
     font-family: 'Inter', sans-serif;
 }
 
-/* ── Hide streamlit chrome ── */
-#MainMenu, footer, header { visibility: hidden; }
-[data-testid="stHeader"] { display: none; }
+/* ── Hide streamlit chrome but keep sidebar toggle ── */
+#MainMenu, footer { visibility: hidden; }
+[data-testid="stHeader"] { background: transparent; }
 [data-testid="stToolbar"] { display: none; }
+/* Make the sidebar collapse arrow always visible */
+[data-testid="collapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 0 8px 8px 0;
+    color: #58a6ff;
+}
 .block-container { padding: 2rem 2.5rem 2rem 2.5rem; max-width: 1400px; }
 
 /* ── Sidebar ── */
