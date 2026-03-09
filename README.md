@@ -1,22 +1,70 @@
 # ☄️ Near-Earth Asteroid Monitor
 
-> An interactive dashboard for tracking Near-Earth Asteroids (NEAs) in real-time using NASA's NeoWs API. Visualize upcoming flybys, miss distances, asteroid sizes, and potential hazard status — built with Python and Streamlit.
+> A live analytics dashboard tracking every asteroid approaching Earth over the next 7 days — powered by NASA's NeoWs API. Features a custom threat scoring model, week-over-week comparisons, an asteroid detail panel, and an interactive 3D orbit viewer.
 
----
-
-## 🚀 Features
-
-- 📅 **7-day flyby forecast** — fetches all asteroids approaching Earth in the next 7 days
-- 📊 **Interactive charts** — scatter plots and bar charts built with Plotly
-- ⚠️ **Hazard classification** — instantly see which asteroids are flagged as potentially dangerous by NASA
-- 📋 **Sortable data table** — browse asteroid name, miss distance, diameter, velocity, and approach date
-- 🌑 **Dark-themed UI** — clean, space-inspired interface
+🚀 **Live app:** [nearearthwatch.streamlit.app](https://nearearthwatch.streamlit.app)
 
 ---
 
 ## 📸 Preview
 
-![Near-Earth Asteroid Monitor Dashboard](dashboard-preview.png)
+### 3D Orbit Viewer
+![3D Orbit Viewer](3d-orbit-viewer.png)
+
+### Main Dashboard
+![Main Dashboard](dashboard-preview.png)
+
+### Asteroid Detail Panel
+![Asteroid Detail Panel](detail-panel.png)
+
+---
+
+## ✨ Features
+
+### 🔴 Live KPI Cards
+Five summary cards refresh every 5 minutes with real-time data:
+- **Total Asteroids** — count of NEOs approaching in the next 7 days
+- **Potentially Hazardous** — how many NASA has flagged as dangerous
+- **Closest Approach** — the nearest flyby and which asteroid it is
+- **Fastest** — top velocity in km/h and the asteroid name
+- **Highest Threat Score** — the most dangerous object by custom scoring
+
+### 🧮 Custom Threat Score (0–100)
+A proprietary risk formula weighting:
+- **Proximity** — 40%
+- **Size** — 35%
+- **Velocity** — 25%
+- With a **1.4× multiplier** applied to NASA-flagged hazardous asteroids
+
+Shown as a column in the asteroid table and as a standalone KPI card.
+
+### 📊 Week-over-Week Comparison
+Fetches the previous 7 days from NASA and displays 4 delta cards:
+- Total asteroids · Hazardous count · Avg miss distance · Avg threat score
+- Color-coded arrows showing increase or decrease vs last week
+
+### 🔍 Asteroid Detail Panel
+Select any asteroid from a dropdown to see:
+- Full metrics — miss distance, diameter, velocity, threat score
+- Hazard badge (Safe / Hazardous)
+- Animated threat gauge (green / amber / red)
+- Direct link to NASA JPL's close approach data
+
+### ⭐ Record Close Approach Detection
+Fetches full historical close-approach data for the 5 nearest asteroids. If the current flyby is within 1% of their all-time closest approach, they are flagged with a **Record Close Approach** badge in the table and detail panel.
+
+### 🌍 3D Orbit Viewer
+An interactive Plotly 3D scene showing:
+- Earth at centre, Moon orbit ring as a reference
+- All asteroids plotted at their actual miss distances
+- Marker size = diameter · color/shape = hazard status
+- Full hover tooltips with miss distance, diameter, velocity, and threat score
+- Drag to rotate · scroll to zoom
+
+### 📈 Analytics Charts
+- Diameter vs. Miss Distance scatter plot (color-coded by hazard status)
+- Asteroids per Day stacked bar chart
+- Velocity Distribution by Day box plot
 
 ---
 
@@ -26,9 +74,9 @@
 |---|---|
 | Python | Core language |
 | Streamlit | Web dashboard framework |
-| Plotly | Interactive charts |
+| Plotly | Interactive 2D and 3D charts |
 | Requests | NASA API calls |
-| NASA NeoWs API | Near-Earth Object data |
+| NASA NeoWs API | Near-Earth Object data (CNEOS) |
 
 ---
 
@@ -37,7 +85,7 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/near-earth-asteroid-monitor.git
+git clone https://github.com/shrek6201/near-earth-asteroid-monitor.git
 cd near-earth-asteroid-monitor
 ```
 
@@ -53,13 +101,13 @@ Sign up for free at [api.nasa.gov](https://api.nasa.gov). You'll receive your ke
 
 ### 4. Set your API key
 
-You can either set it as an environment variable:
+Set it as an environment variable:
 
 ```bash
 export NASA_API_KEY=your_api_key_here
 ```
 
-Or enter it directly in the app's sidebar when prompted.
+Or enter it directly in the app's sidebar when the app loads.
 
 ### 5. Run the app
 
@@ -71,13 +119,25 @@ The dashboard will open in your browser at `http://localhost:8501`.
 
 ---
 
+## 🔐 Deploying on Streamlit Cloud
+
+1. Push your code to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io) and connect your repo
+3. Under **Advanced Settings → Secrets**, add:
+```toml
+NASA_API_KEY = "your_api_key_here"
+```
+4. Deploy — your API key stays secure and never appears in the UI
+
+---
+
 ## 📡 Data Source
 
-This project uses NASA's **NeoWs (Near Earth Object Web Service)** API — a RESTful API for searching and browsing near-Earth asteroid data maintained by NASA's Jet Propulsion Laboratory (JPL).
+This project uses NASA's **NeoWs (Near Earth Object Web Service)** API, maintained by the **Center for Near Earth Object Studies (CNEOS)** at NASA's Jet Propulsion Laboratory.
 
-- API Docs: [api.nasa.gov](https://api.nasa.gov)
-- Data updates daily
-- Free tier allows up to 1,000 requests/hour
+- API docs: [api.nasa.gov](https://api.nasa.gov)
+- Free tier: up to 1,000 requests/hour
+- Data auto-refreshes every 5 minutes in the live app
 
 ---
 
@@ -91,16 +151,6 @@ near-earth-asteroid-monitor/
 ├── requirements.txt     # Python dependencies
 └── README.md
 ```
-
----
-
-## 🌍 Example Queries
-
-Once the app is running, you can explore:
-
-- Which asteroid is passing closest to Earth this week?
-- How many potentially hazardous asteroids are approaching in the next 7 days?
-- What's the size distribution of upcoming flybys?
 
 ---
 
@@ -118,6 +168,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## 🙏 Acknowledgements
 
-- [NASA Open APIs](https://api.nasa.gov) for providing free access to planetary data
-- [Streamlit](https://streamlit.io) for making data apps ridiculously easy to build
-- [Plotly](https://plotly.com) for beautiful interactive visualizations
+- [NASA Open APIs](https://api.nasa.gov) for free access to real-time planetary data
+- [Streamlit](https://streamlit.io) for making data apps easy to build and deploy
+- [Plotly](https://plotly.com) for powerful interactive visualizations
