@@ -241,17 +241,24 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     env_key = os.environ.get("NASA_API_KEY", "")
-    api_key = st.text_input(
-        "NASA API Key",
-        value=env_key,
-        type="password",
-        placeholder="Paste key or set NASA_API_KEY",
-        help="Get a free key at https://api.nasa.gov/",
-        label_visibility="visible",
-    )
-    if not api_key:
-        api_key = "DEMO_KEY"
-        st.warning("Using DEMO_KEY — rate limited.", icon="⚠️")
+    if env_key:
+        api_key = env_key
+        st.markdown("""
+        <div style='background:rgba(63,185,80,0.08); border:1px solid rgba(63,185,80,0.2);
+                    border-radius:8px; padding:10px 14px; font-size:12px; color:#3fb950;'>
+            ✓ API key configured
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        api_key = st.text_input(
+            "NASA API Key",
+            type="password",
+            placeholder="Paste key or set NASA_API_KEY",
+            help="Get a free key at https://api.nasa.gov/",
+        )
+        if not api_key:
+            api_key = "DEMO_KEY"
+            st.warning("Using DEMO_KEY — rate limited.", icon="⚠️")
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
