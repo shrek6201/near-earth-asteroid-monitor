@@ -35,10 +35,8 @@ html, body, .stApp {
 }
 #MainMenu, footer { visibility: hidden; }
 [data-testid="stHeader"] { background-color: #06080f; border-bottom: none; }
-/* Hide Streamlit Cloud "View source" GitHub button */
-[data-testid="stToolbar"] { display: none !important; }
-/* But keep the sidebar collapse toggle visible */
-[data-testid="collapsedControl"] { display: flex !important; }
+/* Hide only the "View source" link that points to app.py */
+a[href*="app.py"] { display: none !important; }
 .block-container { padding: 2rem 2.5rem; max-width: 1400px; }
 
 section[data-testid="stSidebar"] {
