@@ -9,13 +9,13 @@
 ## 📸 Preview
 
 ### 3D Orbit Viewer
-![3D Orbit Viewer](3d-orbit-viewer.png)
+![3D Orbit Viewer](screenshots/3d-orbit-viewer.png)
 
 ### Main Dashboard
-![Main Dashboard](dashboard-preview-2.png)
+![Main Dashboard](screenshots/dashboard-preview-2.png)
 
 ### Asteroid Detail Panel
-![Asteroid Detail Panel](detail-panel.png)
+![Asteroid Detail Panel](screenshots/detail-panel.png)
 
 ---
 
