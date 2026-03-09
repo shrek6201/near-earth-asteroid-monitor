@@ -12,7 +12,7 @@
 ![3D Orbit Viewer](3d-orbit-viewer.png)
 
 ### Main Dashboard
-![Main Dashboard](dashboard-preview.png)
+![Main Dashboard](dashboard-preview-2.png)
 
 ### Asteroid Detail Panel
 ![Asteroid Detail Panel](detail-panel.png)
