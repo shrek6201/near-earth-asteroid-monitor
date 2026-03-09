@@ -135,6 +135,38 @@ section[data-testid="stSidebar"] .stButton button:hover { opacity: 0.85; }
 </style>
 """, unsafe_allow_html=True)
 
+# ── Light theme override ──────────────────────────────────────────────────────
+LIGHT_CSS = """
+<style>
+html, body, .stApp { background-color: #f6f8fa !important; color: #24292f !important; }
+[data-testid="stHeader"]  { background-color: #f6f8fa !important; }
+[data-testid="stSidebar"], section[data-testid="stSidebar"] {
+    background: #ffffff !important; border-right: 1px solid #d0d7de !important;
+}
+section[data-testid="stSidebar"] .stTextInput input {
+    background: #f6f8fa !important; border: 1px solid #d0d7de !important; color: #24292f !important;
+}
+.kpi-card { background: linear-gradient(135deg,#ffffff,#f6f8fa) !important; border-color:#d0d7de !important; }
+.kpi-label { color: #57606a !important; }
+.kpi-value { color: #24292f !important; }
+.kpi-sub   { color: #6e7781 !important; }
+.section-header { color:#57606a !important; border-color:#d0d7de !important; }
+.hero { background: linear-gradient(135deg,#ffffff,#eaf0f6,#ffffff) !important; border-color:#d0d7de !important; }
+.hero p { color: #57606a !important; }
+.chart-card { background:#ffffff !important; border-color:#d0d7de !important; }
+.detail-card { background: linear-gradient(135deg,#ffffff,#f6f8fa) !important; border-color:#d0d7de !important; }
+.detail-row  { border-color:#d0d7de !important; }
+.detail-label { color:#57606a !important; }
+.detail-value { color:#24292f !important; }
+.threat-bar-wrap { background:#d0d7de !important; }
+.stDataFrame { border-color:#d0d7de !important; }
+</style>
+"""
+
+# ── Theme state ───────────────────────────────────────────────────────────────
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
 # ── Auto-refresh ──────────────────────────────────────────────────────────────
 REFRESH_MS = 5 * 60 * 1000
 st_autorefresh(interval=REFRESH_MS, key="auto_refresh")
@@ -197,6 +229,11 @@ with st.sidebar:
         fetch_feed.clear()
         st.rerun()
 
+    theme_label = "☀️  Light Mode" if st.session_state.theme == "dark" else "🌙  Dark Mode"
+    if st.button(theme_label, use_container_width=True):
+        st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
+        st.rerun()
+
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     now_local = datetime.now(user_tz)
     st.markdown(f"""
@@ -210,6 +247,18 @@ with st.sidebar:
         <div style='margin-left:18px;'>Every 5 minutes</div>
     </div>
     """, unsafe_allow_html=True)
+
+# ── Apply theme ───────────────────────────────────────────────────────────────
+if st.session_state.theme == "light":
+    st.markdown(LIGHT_CSS, unsafe_allow_html=True)
+
+is_dark    = st.session_state.theme == "dark"
+CHART_BG   = "#0d1117" if is_dark else "#ffffff"
+GRID_COLOR = "#1c2333" if is_dark else "#e8eaed"
+FONT_COLOR = "#8b949e" if is_dark else "#57606a"
+CHART_TMPL = "plotly_dark" if is_dark else "plotly_white"
+GAUGE_BG   = "#161b22" if is_dark else "#f6f8fa"
+SCENE_BG   = "#06080f" if is_dark else "#f6f8fa"
 
 # ── Fetch current + historical ────────────────────────────────────────────────
 today      = datetime.now(timezone.utc).date()
@@ -448,7 +497,7 @@ with d2:
         gauge={
             "axis": {"range": [0, 100], "tickcolor": "#8b949e", "tickfont": {"size": 10}},
             "bar": {"color": threat_color, "thickness": 0.25},
-            "bgcolor": "#161b22",
+            "bgcolor": GAUGE_BG,
             "bordercolor": "#21262d",
             "steps": [
                 {"range": [0,  40], "color": "rgba(63,185,80,0.15)"},
@@ -460,7 +509,7 @@ with d2:
         title={"text": "Threat Score", "font": {"size": 13, "color": "#8b949e"}},
     ))
     gauge.update_layout(
-        paper_bgcolor="#0d1117", font_color="#c9d1d9",
+        paper_bgcolor=CHART_BG, font_color=FONT_COLOR,
         margin=dict(l=20, r=20, t=40, b=10), height=220,
     )
     st.plotly_chart(gauge, width="stretch")
@@ -468,14 +517,13 @@ with d2:
 # ── Charts ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-header">Analytics</div>', unsafe_allow_html=True)
 
-CHART_BG   = "#0d1117"
-GRID_COLOR = "#1c2333"
-FONT_COLOR = "#8b949e"
+legend_bg  = "rgba(13,17,23,0.8)" if is_dark else "rgba(255,255,255,0.9)"
+legend_bc  = "#21262d"            if is_dark else "#d0d7de"
 chart_layout = dict(
     paper_bgcolor=CHART_BG, plot_bgcolor=CHART_BG,
     font=dict(family="Inter, sans-serif", color=FONT_COLOR, size=12),
     margin=dict(l=10, r=10, t=40, b=10),
-    legend=dict(bgcolor="rgba(13,17,23,0.8)", bordercolor="#21262d", borderwidth=1, font=dict(size=11)),
+    legend=dict(bgcolor=legend_bg, bordercolor=legend_bc, borderwidth=1, font=dict(size=11)),
     xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, tickfont=dict(size=11)),
     yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, tickfont=dict(size=11)),
 )
@@ -494,7 +542,7 @@ with col_l:
                     "Threat Score": ":.1f", "Potentially Hazardous": False, "Diameter Avg (m)": False},
         labels={"Miss Distance (km)": "Miss Distance (km)", "Diameter Avg (m)": "Avg Diameter (m)", "Potentially Hazardous": "Hazardous"},
         title="Diameter vs. Miss Distance",
-        template="plotly_dark",
+        template=CHART_TMPL,
     )
     scatter.update_traces(marker=dict(opacity=0.85, line=dict(width=0.5, color="#21262d")))
     scatter.update_layout(**chart_layout, title_font=dict(size=14, color="#c9d1d9"))
@@ -507,7 +555,7 @@ with col_r:
     daily["Type"] = daily["Potentially Hazardous"].map({True: "Hazardous", False: "Safe"})
     bar = px.bar(daily, x="Date", y="Count", color="Type",
                  color_discrete_map={"Hazardous": "#f85149", "Safe": "#58a6ff"},
-                 barmode="stack", title="Asteroids per Day", template="plotly_dark",
+                 barmode="stack", title="Asteroids per Day", template=CHART_TMPL,
                  labels={"Count": "Count", "Date": "Date", "Type": ""})
     bar.update_traces(marker_line_width=0)
     bar.update_layout(**chart_layout, title_font=dict(size=14, color="#c9d1d9"), bargap=0.3)
@@ -520,7 +568,7 @@ vel_fig = px.violin(df, x="Date", y="Velocity (km/h)",
                     color="Potentially Hazardous",
                     color_discrete_map={True: "#f85149", False: "#58a6ff"},
                     box=True, points="all", hover_name="Name",
-                    title="Velocity Distribution by Day", template="plotly_dark",
+                    title="Velocity Distribution by Day", template=CHART_TMPL,
                     labels={"Potentially Hazardous": "Hazardous"})
 vel_fig.update_traces(meanline_visible=True, marker=dict(size=4, opacity=0.7))
 vel_fig.update_layout(**chart_layout, title_font=dict(size=14, color="#c9d1d9"), height=340)
@@ -641,15 +689,15 @@ if not haz_df.empty:
     ))
 
 fig3d.update_layout(
-    paper_bgcolor="#0d1117",
+    paper_bgcolor=CHART_BG,
     scene=dict(
-        bgcolor="#06080f",
+        bgcolor=SCENE_BG,
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False,
-                   title="", backgroundcolor="#06080f"),
+                   title="", backgroundcolor=SCENE_BG),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False,
-                   title="", backgroundcolor="#06080f"),
+                   title="", backgroundcolor=SCENE_BG),
         zaxis=dict(showgrid=False, zeroline=False, showticklabels=False,
-                   title="", backgroundcolor="#06080f"),
+                   title="", backgroundcolor=SCENE_BG),
         camera=dict(eye=dict(x=1.4, y=0.8, z=0.8)),
     ),
     legend=dict(bgcolor="rgba(13,17,23,0.8)", bordercolor="#21262d",
