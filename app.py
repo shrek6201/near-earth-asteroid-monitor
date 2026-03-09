@@ -35,9 +35,10 @@ html, body, .stApp {
 }
 #MainMenu, footer { visibility: hidden; }
 [data-testid="stHeader"] { background-color: #06080f; border-bottom: none; }
-/* Style the top-right toolbar to match dark theme */
-[data-testid="stToolbar"] button { color: #8b949e !important; }
-[data-testid="stToolbar"] button:hover { color: #e6edf3 !important; }
+/* Hide Streamlit Cloud "View source" GitHub button */
+[data-testid="stToolbar"] { display: none !important; }
+/* But keep the sidebar collapse toggle visible */
+[data-testid="collapsedControl"] { display: flex !important; }
 .block-container { padding: 2rem 2.5rem; max-width: 1400px; }
 
 section[data-testid="stSidebar"] {
